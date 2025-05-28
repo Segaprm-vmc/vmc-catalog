@@ -1,3 +1,14 @@
+// Переход на Supabase API
+export { SupabaseNewsAPI as NewsAPI, type NewsItem } from './supabaseNews';
+
+// Для обратной совместимости
+import { SupabaseNewsAPI } from './supabaseNews';
+
+export const getNews = () => SupabaseNewsAPI.getNews();
+export const getNewsById = (id: string) => SupabaseNewsAPI.getNewsById(id);
+export const getFeaturedNews = () => SupabaseNewsAPI.getFeaturedNews();
+export const getNewsByCategory = (category: string) => SupabaseNewsAPI.getNewsByCategory(category);
+
 import type { News } from '@/types';
 
 const NEWS_FILE_PATH = '/data/news.json';
