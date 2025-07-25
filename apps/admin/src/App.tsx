@@ -19,7 +19,12 @@ const dataProvider = {
       headers.Authorization = `Bearer ${token}`;
     }
     return fetch(`http://localhost:8000/api/${resource}`, { headers })
-      .then(response => response.json())
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
       .then(data => ({ data, total: data.length }));
   },
   getOne: (resource: string, params: any) => {
@@ -29,7 +34,12 @@ const dataProvider = {
       headers.Authorization = `Bearer ${token}`;
     }
     return fetch(`http://localhost:8000/api/${resource}/${params.id}`, { headers })
-      .then(response => response.json())
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
       .then(data => ({ data }));
   },
   update: (resource: string, params: any) => {
@@ -43,7 +53,12 @@ const dataProvider = {
       headers,
       body: JSON.stringify(params.data),
     })
-      .then(response => response.json())
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
       .then(data => ({ data }));
   },
   create: (resource: string, params: any) => {
@@ -57,7 +72,12 @@ const dataProvider = {
       headers,
       body: JSON.stringify(params.data),
     })
-      .then(response => response.json())
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
       .then(data => ({ data }));
   },
   delete: (resource: string, params: any) => {
@@ -70,7 +90,12 @@ const dataProvider = {
       method: 'DELETE',
       headers,
     })
-      .then(() => ({ data: params.previousData }));
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return { data: params.previousData };
+      });
   },
 };
 

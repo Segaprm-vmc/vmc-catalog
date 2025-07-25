@@ -1,5 +1,6 @@
 import { Edit, SimpleForm, TextInput, ReferenceInput, SelectInput, BooleanInput, NumberInput, ArrayInput, SimpleFormIterator } from 'react-admin';
 import { CharacteristicsEditor } from './CharacteristicsEditor';
+import { ImageInput } from './ImageInput';
 
 export const ProductEdit = () => (
   <Edit title="Редактировать товар">
@@ -12,14 +13,10 @@ export const ProductEdit = () => (
       </ReferenceInput>
       <NumberInput source="order" label="Порядок" />
       <BooleanInput source="isActive" label="Активен" />
-      <ArrayInput source="images" label="Изображения">
-        <SimpleFormIterator>
-          <TextInput source="" label="URL изображения" fullWidth />
-        </SimpleFormIterator>
-      </ArrayInput>
+      <ImageInput source="images" label="Изображения" />
       <ArrayInput source="videoUrls" label="Видео (YouTube/VK)">
         <SimpleFormIterator>
-          <TextInput source="" label="URL видео" fullWidth />
+          <TextInput source="." label="URL видео" fullWidth />
         </SimpleFormIterator>
       </ArrayInput>
       <CharacteristicsEditor />
