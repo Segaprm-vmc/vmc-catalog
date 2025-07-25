@@ -18,7 +18,8 @@ export default async function HomePage() {
 
   return (
     <div className="space-y-8">
-      <div className="text-center">
+      {/* Hero Section */}
+      <div className="text-center bg-white rounded-2xl p-8 shadow-sm border border-gray-200">
         <h1 className="text-4xl font-bold text-gray-900 mb-4">
           Каталог мототехники VMC
         </h1>
@@ -30,10 +31,17 @@ export default async function HomePage() {
         <SearchBar />
       </div>
 
-      <div>
-        <h2 className="text-2xl font-semibold text-gray-900 mb-6">
-          Все товары ({products.length})
-        </h2>
+      {/* Products Section */}
+      <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-200">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold text-gray-900">
+            Все товары
+          </h2>
+          <span className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+            {products.length} товаров
+          </span>
+        </div>
+        
         <ProductGrid products={products} />
       </div>
     </div>
