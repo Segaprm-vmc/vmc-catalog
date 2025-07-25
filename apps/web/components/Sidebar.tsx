@@ -35,7 +35,7 @@ export function Sidebar({ categories }: SidebarProps) {
   }
 
   return (
-    <div className="w-80 bg-white border-r border-gray-200 h-screen overflow-y-auto shadow-sm">
+    <div className="hidden lg:block w-80 bg-white border-r border-gray-200 h-screen overflow-y-auto shadow-sm fixed left-0 top-16 z-20">
       <div className="p-6">
         {/* Заголовок */}
         <div className="mb-6 pb-4 border-b border-gray-200">

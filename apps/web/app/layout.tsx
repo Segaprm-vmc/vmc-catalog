@@ -20,7 +20,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <div className="min-h-screen bg-gray-50">
           {/* Header */}
-          <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
+          <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-30">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="flex justify-between items-center py-4">
                 <div className="flex items-center">
@@ -49,7 +49,7 @@ export default function RootLayout({
           {/* Main Content */}
           <div className="flex">
             <SidebarWrapper />
-            <main className="flex-1 p-8 bg-gray-50 min-h-screen">
+            <main className="flex-1 p-4 lg:p-8 bg-gray-50 min-h-screen lg:ml-80">
               <div className="max-w-6xl mx-auto">
                 {children}
               </div>
@@ -57,7 +57,7 @@ export default function RootLayout({
           </div>
           
           {/* Footer */}
-          <footer className="bg-white border-t border-gray-200">
+          <footer className="bg-white border-t border-gray-200 lg:ml-80">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
               <div className="text-center text-gray-500 text-sm">
                 © 2024 VMC. Внутренний каталог мототехники для менеджеров.
