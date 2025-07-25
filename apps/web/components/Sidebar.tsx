@@ -112,13 +112,15 @@ export function Sidebar({ categories }: SidebarProps) {
         </div>
         
         {/* Кнопка админ панели */}
-        <Link
-          href="/admin"
+        <a
+          href="http://localhost:3001"
+          target="_blank"
+          rel="noopener noreferrer"
           className="w-full flex items-center justify-center px-4 py-3 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-all duration-200 shadow-sm hover:shadow-md"
         >
           <Cog6ToothIcon className="h-4 w-4 mr-2" />
           Панель администратора
-        </Link>
+        </a>
       </div>
     </div>
   )
