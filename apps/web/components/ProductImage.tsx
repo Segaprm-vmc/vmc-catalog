@@ -21,9 +21,9 @@ export function ProductImage({ src, alt, width, height, className }: ProductImag
       return imageUrl
     }
     
-    // Если это относительный путь, добавляем базовый URL
+    // Если это относительный путь, возвращаем placeholder
     if (imageUrl.startsWith('/')) {
-      return `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}${imageUrl}`
+      return `https://via.placeholder.com/${width}x${height}/CCCCCC/666666?text=VMC+Placeholder`
     }
     
     // Fallback на placeholder
@@ -33,18 +33,21 @@ export function ProductImage({ src, alt, width, height, className }: ProductImag
   const handleError = () => {
     if (!hasError) {
       setHasError(true)
-      setImgSrc(`https://via.placeholder.com/${width}x${height}/CCCCCC/666666?text=VMC`)
+      setImgSrc(`https://via.placeholder.com/${width}x${height}/CCCCCC/666666?text=VMC+Error`)
     }
   }
 
+  const finalSrc = getImageUrl(imgSrc)
+
   return (
     <Image
-      src={getImageUrl(imgSrc)}
+      src={finalSrc}
       alt={alt}
       width={width}
       height={height}
       className={className}
       onError={handleError}
+      unoptimized={finalSrc.includes('via.placeholder.com')}
     />
   )
 } 

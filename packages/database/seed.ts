@@ -488,11 +488,11 @@ async function main() {
         order: product.order,
         isActive: true,
         images: [
-          `/images/${product.slug}-1.jpg`,
-          `/images/${product.slug}-2.jpg`,
-          `/images/${product.slug}-3.jpg`,
-          `/images/${product.slug}-4.jpg`,
-          `/images/${product.slug}-5.jpg`
+          `https://via.placeholder.com/800x450/CCCCCC/666666?text=VMC+${product.slug.toUpperCase().replace(/-/g, '+')}+1`,
+          `https://via.placeholder.com/800x450/CCCCCC/666666?text=VMC+${product.slug.toUpperCase().replace(/-/g, '+')}+2`,
+          `https://via.placeholder.com/800x450/CCCCCC/666666?text=VMC+${product.slug.toUpperCase().replace(/-/g, '+')}+3`,
+          `https://via.placeholder.com/800x450/CCCCCC/666666?text=VMC+${product.slug.toUpperCase().replace(/-/g, '+')}+4`,
+          `https://via.placeholder.com/800x450/CCCCCC/666666?text=VMC+${product.slug.toUpperCase().replace(/-/g, '+')}+5`
         ],
         videoUrls: []
       }
