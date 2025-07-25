@@ -22,12 +22,21 @@ const JWT_SECRET = process.env.JWT_SECRET || 'supersecret';
 
 function authMiddleware(req: express.Request, res: express.Response, next: express.NextFunction) {
   const auth = req.headers.authorization;
-  if (!auth || !auth.startsWith('Bearer ')) return res.status(401).json({ error: 'No token' });
+  console.log(`🔐 Проверка аутентификации для ${req.method} ${req.path}`);
+  console.log(`📋 Заголовки:`, req.headers);
+  
+  if (!auth || !auth.startsWith('Bearer ')) {
+    console.log(`❌ Нет токена в заголовке Authorization`);
+    return res.status(401).json({ error: 'No token' });
+  }
+  
   try {
     const payload = jwt.verify(auth.split(' ')[1], JWT_SECRET);
     req.user = payload;
+    console.log(`✅ Токен валиден для пользователя:`, payload);
     next();
-  } catch {
+  } catch (error) {
+    console.log(`❌ Невалидный токен:`, error);
     res.status(401).json({ error: 'Invalid token' });
   }
 }
@@ -63,16 +72,23 @@ app.get('/api/products', async (req, res) => {
 app.get('/api/products/:id', async (req, res) => {
   try {
     const { id } = req.params;
+    console.log(`🔍 Запрос товара с ID: ${id}`);
+    
     const product = await prisma.product.findUnique({
       where: { id: parseInt(id) },
       include: { category: true, characteristics: true }
     });
+    
     if (!product) {
+      console.log(`❌ Товар с ID ${id} не найден`);
       return res.status(404).json({ error: 'Product not found' });
     }
+    
+    console.log(`✅ Товар найден: ${product.name}`);
     res.json(product);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch product' });
+    console.error(`💥 Ошибка при получении товара ${req.params.id}:`, error);
+    res.status(500).json({ error: 'Failed to fetch product', details: error instanceof Error ? error.message : 'Unknown error' });
   }
 });
 
@@ -110,34 +126,50 @@ app.put('/api/products/:id', authMiddleware, async (req, res) => {
     const { id } = req.params;
     const { name, slug, description, categoryId, order, isActive, images, videoUrls, characteristics } = req.body;
     
-    // Сначала удаляем все существующие характеристики
-    await prisma.productCharacteristic.deleteMany({
-      where: { productId: parseInt(id) }
-    });
+    console.log(`✏️ Обновление товара ${id} с данными:`, req.body);
+    
+    // Создаем объект данных для обновления, исключая undefined значения
+    const updateData: any = {};
+    
+    if (name !== undefined) updateData.name = name;
+    if (slug !== undefined) updateData.slug = slug;
+    if (description !== undefined) updateData.description = description;
+    if (categoryId !== undefined) updateData.categoryId = parseInt(categoryId);
+    if (order !== undefined) updateData.order = order;
+    if (isActive !== undefined) updateData.isActive = isActive;
+    if (images !== undefined) updateData.images = images;
+    if (videoUrls !== undefined) updateData.videoUrls = videoUrls;
+    
+    console.log(`📝 Данные для обновления:`, updateData);
+    
+    // Сначала удаляем все существующие характеристики, если они переданы
+    if (characteristics !== undefined) {
+      await prisma.productCharacteristic.deleteMany({
+        where: { productId: parseInt(id) }
+      });
+    }
     
     const product = await prisma.product.update({
       where: { id: parseInt(id) },
       data: {
-        name,
-        slug,
-        description,
-        categoryId: parseInt(categoryId),
-        order: order || 0,
-        isActive: isActive !== undefined ? isActive : true,
-        images: images || [],
-        videoUrls: videoUrls || [],
-        characteristics: {
-          create: characteristics?.filter((char: any) => char.value).map((char: any) => ({
-            name: char.name,
-            value: char.value
-          })) || []
-        }
+        ...updateData,
+        ...(characteristics !== undefined && {
+          characteristics: {
+            create: characteristics.filter((char: any) => char.value).map((char: any) => ({
+              name: char.name,
+              value: char.value
+            }))
+          }
+        })
       },
       include: { category: true, characteristics: true }
     });
+    
+    console.log(`✅ Товар успешно обновлен: ${product.name}`);
     res.json(product);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to update product' });
+    console.error(`💥 Ошибка при обновлении товара ${req.params.id}:`, error);
+    res.status(500).json({ error: 'Failed to update product', details: error instanceof Error ? error.message : 'Unknown error' });
   }
 });
 
