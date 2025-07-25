@@ -1,5 +1,7 @@
+'use client'
+
 import Link from 'next/link'
-import Image from 'next/image'
+import { ProductImage } from './ProductImage'
 
 interface Product {
   id: number
@@ -30,26 +32,11 @@ export function ProductGrid({ products }: ProductGridProps) {
     )
   }
 
-  const getImageUrl = (imageUrl: string) => {
-    // Если это полный URL, используем его
-    if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
-      return imageUrl
-    }
-    
-    // Если это относительный путь, добавляем базовый URL
-    if (imageUrl.startsWith('/')) {
-      return `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}${imageUrl}`
-    }
-    
-    // Fallback на placeholder
-    return `https://via.placeholder.com/400x225/CCCCCC/666666?text=VMC`
-  }
-
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {products.map((product) => {
         const mainImage = product.images && product.images.length > 0 
-          ? getImageUrl(product.images[0])
+          ? product.images[0] 
           : 'https://via.placeholder.com/400x225/CCCCCC/666666?text=VMC'
         const displacement = product.characteristics?.find(c => c.name === 'displacement')?.value
         const power = product.characteristics?.find(c => c.name === 'power')?.value
@@ -61,17 +48,12 @@ export function ProductGrid({ products }: ProductGridProps) {
             className="card card-hover group"
           >
             <div className="aspect-w-16 aspect-h-9 bg-gray-100">
-              <Image
+              <ProductImage
                 src={mainImage}
                 alt={product.name}
                 width={400}
                 height={225}
                 className="object-cover w-full h-48 group-hover:scale-105 transition-transform duration-200"
-                onError={(e) => {
-                  // Fallback на placeholder при ошибке загрузки
-                  const target = e.target as HTMLImageElement
-                  target.src = 'https://via.placeholder.com/400x225/CCCCCC/666666?text=VMC'
-                }}
               />
             </div>
             <div className="p-6">
