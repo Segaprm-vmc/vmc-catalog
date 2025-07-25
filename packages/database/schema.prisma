@@ -1,0 +1,55 @@
+// Prisma schema for VMC Учебник
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  admin
+}
+
+model User {
+  id       Int      @id @default(autoincrement())
+  email    String   @unique
+  password String
+  name     String
+  role     UserRole @default(admin)
+}
+
+model Category {
+  id          Int       @id @default(autoincrement())
+  name        String
+  slug        String    @unique
+  description String
+  order       Int?
+  products    Product[]
+}
+
+model Product {
+  id          Int       @id @default(autoincrement())
+  name        String
+  slug        String    @unique
+  description String
+  category    Category  @relation(fields: [categoryId], references: [id])
+  categoryId  Int
+  order       Int?
+  isActive    Boolean   @default(true)
+  images      String[]
+  videoUrls   String[]
+  characteristics ProductCharacteristic[]
+}
+
+model ProductCharacteristic {
+  id         Int     @id @default(autoincrement())
+  product    Product @relation(fields: [productId], references: [id])
+  productId  Int
+  name       String
+  value      String
+
+  @@unique([productId, name])
+} 
