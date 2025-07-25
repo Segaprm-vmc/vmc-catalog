@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
+import { SidebarWrapper } from '@/components/SidebarWrapper'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -43,9 +44,14 @@ export default function RootLayout({
               </div>
             </div>
           </header>
-          <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            {children}
-          </main>
+          
+          <div className="flex">
+            <SidebarWrapper />
+            <main className="flex-1 p-8">
+              {children}
+            </main>
+          </div>
+          
           <footer className="bg-gray-50 border-t border-gray-200">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
               <div className="text-center text-gray-500 text-sm">

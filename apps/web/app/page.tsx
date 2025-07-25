@@ -1,20 +1,20 @@
-import Link from 'next/link'
-import { CategoryGrid } from '@/components/CategoryGrid'
+import { SearchBar } from '@/components/SearchBar'
+import { ProductGrid } from '@/components/ProductGrid'
 
-async function getCategories() {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/categories`, {
+async function getAllProducts() {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/products`, {
     cache: 'force-cache'
   })
   
   if (!res.ok) {
-    throw new Error('Failed to fetch categories')
+    throw new Error('Failed to fetch products')
   }
   
   return res.json()
 }
 
 export default async function HomePage() {
-  const categories = await getCategories()
+  const products = await getAllProducts()
 
   return (
     <div className="space-y-8">
@@ -22,24 +22,19 @@ export default async function HomePage() {
         <h1 className="text-4xl font-bold text-gray-900 mb-4">
           Каталог мототехники VMC
         </h1>
-        <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+        <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
           Изучайте характеристики и особенности товаров VMC. 
-          Выберите категорию для просмотра доступных моделей.
+          Используйте поиск для быстрого нахождения нужной модели.
         </p>
+        
+        <SearchBar />
       </div>
 
-      <CategoryGrid categories={categories} />
-
-      <div className="bg-gray-50 rounded-lg p-8 text-center">
-        <h2 className="text-2xl font-semibold text-gray-900 mb-4">
-          Быстрый поиск
+      <div>
+        <h2 className="text-2xl font-semibold text-gray-900 mb-6">
+          Все товары ({products.length})
         </h2>
-        <p className="text-gray-600 mb-6">
-          Не можете найти нужную модель? Используйте поиск по названию товара.
-        </p>
-        <Link href="/search" className="btn-primary">
-          Найти товар
-        </Link>
+        <ProductGrid products={products} />
       </div>
     </div>
   )

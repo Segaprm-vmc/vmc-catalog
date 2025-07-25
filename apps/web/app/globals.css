@@ -31,4 +31,11 @@
   .card-hover {
     @apply hover:shadow-md transition-shadow duration-200;
   }
+  
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
 } 

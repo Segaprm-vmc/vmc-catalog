@@ -25,7 +25,7 @@ export function ProductGrid({ products }: ProductGridProps) {
   if (products.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500 text-lg">В данной категории пока нет товаров</p>
+        <p className="text-gray-500 text-lg">Товары не найдены</p>
       </div>
     )
   }
@@ -33,9 +33,11 @@ export function ProductGrid({ products }: ProductGridProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {products.map((product) => {
-        const mainImage = product.images[0] || '/placeholder-product.jpg'
-        const displacement = product.characteristics.find(c => c.name === 'displacement')?.value
-        const power = product.characteristics.find(c => c.name === 'power')?.value
+        const mainImage = product.images && product.images.length > 0 
+          ? product.images[0] 
+          : 'https://via.placeholder.com/400x225/CCCCCC/666666?text=VMC'
+        const displacement = product.characteristics?.find(c => c.name === 'displacement')?.value
+        const power = product.characteristics?.find(c => c.name === 'power')?.value
 
         return (
           <Link 

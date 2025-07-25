@@ -4,7 +4,7 @@ const nextConfig = {
     appDir: true,
   },
   images: {
-    domains: ['static.tildacdn.com', 'localhost'],
+    domains: ['static.tildacdn.com', 'localhost', 'via.placeholder.com'],
   },
 }
 
