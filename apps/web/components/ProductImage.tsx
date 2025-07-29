@@ -21,6 +21,11 @@ export function ProductImage({ src, alt, width, height, className }: ProductImag
       return imageUrl
     }
     
+    // Если это загруженное изображение из /uploads/, используем API
+    if (imageUrl.startsWith('/uploads/')) {
+      return `http://localhost:8000${imageUrl}`
+    }
+    
     // Если это относительный путь, возвращаем placeholder
     if (imageUrl.startsWith('/')) {
       return `https://via.placeholder.com/${width}x${height}/CCCCCC/666666?text=VMC+Placeholder`

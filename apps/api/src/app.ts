@@ -5,6 +5,9 @@ import morgan from 'morgan';
 import { PrismaClient } from '@prisma/client';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
 
 // Расширяем типы Express для JWT payload
 declare global {
@@ -19,6 +22,39 @@ const app = express();
 const prisma = new PrismaClient();
 
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecret';
+
+// Настройка multer для загрузки файлов
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadPath = path.join(__dirname, '../../web/public/uploads/products');
+    // Создаем папку если её нет
+    if (!fs.existsSync(uploadPath)) {
+      fs.mkdirSync(uploadPath, { recursive: true });
+    }
+    cb(null, uploadPath);
+  },
+  filename: (req, file, cb) => {
+    // Генерируем уникальное имя файла
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const ext = path.extname(file.originalname);
+    cb(null, file.fieldname + '-' + uniqueSuffix + ext);
+  }
+});
+
+const upload = multer({ 
+  storage: storage,
+  limits: {
+    fileSize: 10 * 1024 * 1024 // 10MB лимит
+  },
+  fileFilter: (req, file, cb) => {
+    // Проверяем тип файла
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Только изображения разрешены'));
+    }
+  }
+});
 
 function authMiddleware(req: express.Request, res: express.Response, next: express.NextFunction) {
   const auth = req.headers.authorization;
@@ -46,6 +82,9 @@ app.use(helmet());
 app.use(morgan('dev'));
 app.use(express.json());
 
+// Статическая раздача загруженных файлов
+app.use('/uploads', express.static(path.join(__dirname, '../../web/public/uploads')));
+
 // --- AUTH ---
 app.post('/api/auth/login', async (req, res) => {
   const { email, password } = req.body;
@@ -55,6 +94,42 @@ app.post('/api/auth/login', async (req, res) => {
   if (!valid) return res.status(401).json({ error: 'Invalid credentials' });
   const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
   res.json({ token });
+});
+
+// --- UPLOAD ---
+app.post('/api/upload/images', authMiddleware, upload.array('images', 10), (req, res) => {
+  try {
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ error: 'Нет файлов для загрузки' });
+    }
+
+    const uploadedFiles = (req.files as Express.Multer.File[]).map(file => {
+      return `/uploads/products/${file.filename}`;
+    });
+
+    res.json({ 
+      success: true, 
+      files: uploadedFiles,
+      message: `Загружено ${uploadedFiles.length} файлов`
+    });
+  } catch (error) {
+    console.error('Ошибка загрузки файлов:', error);
+    res.status(500).json({ error: 'Ошибка загрузки файлов' });
+  }
+});
+
+// Обработка ошибок multer
+app.use((error: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  if (error instanceof multer.MulterError) {
+    if (error.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({ error: 'Файл слишком большой (максимум 10MB)' });
+    }
+    return res.status(400).json({ error: 'Ошибка загрузки файла' });
+  }
+  if (error.message === 'Только изображения разрешены') {
+    return res.status(400).json({ error: 'Только изображения разрешены' });
+  }
+  next(error);
 });
 
 // --- PRODUCTS ---

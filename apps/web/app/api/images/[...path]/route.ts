@@ -7,16 +7,30 @@ export async function GET(
   try {
     const path = params.path.join('/')
     
-    // Здесь можно добавить логику для получения изображений из базы данных
-    // или файловой системы. Пока что возвращаем placeholder
-    const placeholderUrl = `https://via.placeholder.com/400x225/CCCCCC/666666?text=VMC+${path}`
+    // Проксируем запрос к API серверу
+    const apiUrl = `http://localhost:8000/uploads/${path}`
     
-    const response = await fetch(placeholderUrl)
+    const response = await fetch(apiUrl)
+    
+    if (!response.ok) {
+      // Если изображение не найдено, возвращаем placeholder
+      const placeholderUrl = `https://via.placeholder.com/400x225/CCCCCC/666666?text=VMC+${path}`
+      const placeholderResponse = await fetch(placeholderUrl)
+      const blob = await placeholderResponse.blob()
+      
+      return new NextResponse(blob, {
+        headers: {
+          'Content-Type': 'image/jpeg',
+          'Cache-Control': 'public, max-age=31536000, immutable',
+        },
+      })
+    }
+    
     const blob = await response.blob()
     
     return new NextResponse(blob, {
       headers: {
-        'Content-Type': 'image/jpeg',
+        'Content-Type': response.headers.get('Content-Type') || 'image/jpeg',
         'Cache-Control': 'public, max-age=31536000, immutable',
       },
     })
